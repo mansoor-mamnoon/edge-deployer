@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
+import MonacoEditor from "./components/MonacoEditor";
 
-const App = () => <h1>Hello, world!</h1>;
+const App = () => {
+    const [code, setCode] = useState(`export default {
+        async fetch(request) {
+          return new Response("Hello from your deployed API!", {
+            headers: { "Content-Type": "text/plain" },
+          });
+        }
+      };
+      `.trim());
+      
+
+  return (
+    <div style={{ height: "100vh", width: "100vw" }}>
+      <MonacoEditor code={code} language="javascript" onChange={setCode} />
+    </div>
+  );
+};
 
 const container = document.getElementById("root");
 if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
+  createRoot(container).render(<App />);
 }
+
+
