@@ -1,0 +1,39 @@
+{
+  "name": "edge-deployer",
+  "version": "1.0.0",
+  "main": "build/electron/main.js",
+  "scripts": {
+    "start": "concurrently \"npm:tsc:watch\" \"npm:webpack:serve\" \"npm:electron\"",
+    "tsc:watch": "tsc --watch",
+    "webpack:serve": "webpack serve",
+    "electron": "wait-on http://localhost:8080 && electron .",
+    "build": "tsc && webpack"
+  }
+  
+  ,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "monaco-editor": "^0.52.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/electron": "^1.4.38",
+    "@types/node": "^24.0.3",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "concurrently": "^9.1.2",
+    "electron": "^36.4.0",
+    "electron-builder": "^26.0.12",
+    "html-webpack-plugin": "^5.6.3",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "wait-on": "^8.0.3",
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  }
+}
