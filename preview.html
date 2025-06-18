@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <body style="margin: 0; background: #1e1e1e; color: #f5f5f5; font-family: monospace;">
+    <pre id="output">Waiting for input...</pre>
+    
+    <script>
+      window.addEventListener("message", async (event) => {
+        let userCode = event.data;
+        console.log("📥 Received message:", userCode); // ✅ log incoming code
+
+        // Replace `export default` with CommonJS `module.exports =`
+        userCode = userCode.replace(/export\s+default/, "module.exports =");
+
+        try {
+          const exports = {};
+          const module = { exports };
+          const wrappedCode = `(function(exports, module) { ${userCode} })(exports, module);`;
+          eval(wrappedCode);
+
+          if (typeof module.exports.fetch === "function") {
+            console.log("⚙️ fetch() found. Running...");
+            const response = await module.exports.fetch(new Request("http://localhost"));
+            const text = await response.text();
+            document.getElementById("output").textContent = text;
+          } else {
+            console.log("❌ fetch() not found");
+            document.getElementById("output").textContent = "❌ No fetch() function exported.";
+          }
+        } catch (err) {
+          console.error("⚠️ Error running code:", err);
+          document.getElementById("output").textContent = "⚠️ Error:\n" + err;
+        }
+      });
+    </script>
+  </body>
+</html>
