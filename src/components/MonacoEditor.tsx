@@ -11,6 +11,7 @@ const MonacoEditor = ({ code, language, onChange }: MonacoEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const monacoRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
+  // Initial mount
   useEffect(() => {
     if (editorRef.current) {
       monacoRef.current = monaco.editor.create(editorRef.current, {
@@ -34,7 +35,14 @@ const MonacoEditor = ({ code, language, onChange }: MonacoEditorProps) => {
     };
   }, []);
 
-  return <div ref={editorRef} style={{ height: "100vh", width: "100%" }} />;
+  // ✨ Update editor content if `code` changes externally (e.g. file open)
+  useEffect(() => {
+    if (monacoRef.current && code !== monacoRef.current.getValue()) {
+      monacoRef.current.setValue(code);
+    }
+  }, [code]);
+
+  return <div ref={editorRef} style={{ height: "100%", width: "100%" }} />;
 };
 
 export default MonacoEditor;

@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
-
     "types": ["node", "electron"],
-    "target": "ES6",
+    "target": "ES2020",
     "module": "CommonJS",
-  "target": "ES2020",
     "jsx": "react",
     "outDir": "./build",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
-    
+    "skipLibCheck": true,
+    "rootDir": "."
   },
   "include": ["src", "electron"]
 }
