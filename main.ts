@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as path from "path";
 import * as fs from "fs";
+import { bundleAndSave } from "./deployer";
 
 
 
@@ -57,3 +58,9 @@ ipcMain.handle("open-file", async () => {
   return null;
 });
 
+
+ipcMain.handle("deploy-code", async (_event, code: string) => {
+  console.log("🚀 ipcMain: deploy-code triggered");
+  const filePath = await bundleAndSave(code);
+  return filePath;
+});
