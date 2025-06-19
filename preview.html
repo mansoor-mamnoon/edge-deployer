@@ -4,33 +4,46 @@
     <pre id="output">Waiting for input...</pre>
     
     <script>
-      window.addEventListener("message", async (event) => {
-        let userCode = event.data;
-        console.log("📥 Received message:", userCode); // ✅ log incoming code
-
-        // Replace `export default` with CommonJS `module.exports =`
-        userCode = userCode.replace(/export\s+default/, "module.exports =");
-
-        try {
-          const exports = {};
-          const module = { exports };
-          const wrappedCode = `(function(exports, module) { ${userCode} })(exports, module);`;
-          eval(wrappedCode);
-
-          if (typeof module.exports.fetch === "function") {
-            console.log("⚙️ fetch() found. Running...");
-            const response = await module.exports.fetch(new Request("http://localhost"));
-            const text = await response.text();
-            document.getElementById("output").textContent = text;
-          } else {
-            console.log("❌ fetch() not found");
-            document.getElementById("output").textContent = "❌ No fetch() function exported.";
+        window.addEventListener("message", async (event) => {
+          let userCode = event.data;
+          console.log("📥 Received message:", userCode); // ✅ log incoming code
+      
+          // Replace `export default` with CommonJS `module.exports =`
+          userCode = userCode.replace(/export\s+default/, "module.exports =");
+      
+          const logs = []; // 🔁 Store console.log output
+      
+          // 🧠 Override console.log to capture logs in preview UI
+          console.log = (...args) => {
+            logs.push(args.join(" "));
+            document.getElementById("output").textContent = logs.join("\n");
+          };
+      
+          try {
+            const exports = {};
+            const module = { exports };
+      
+            const wrappedCode = `(function(exports, module) { ${userCode} })(exports, module);`;
+            eval(wrappedCode);
+      
+            if (typeof module.exports.fetch === "function") {
+              console.log("⚙️ fetch() found. Running...");
+              const response = await module.exports.fetch(new Request("http://localhost"));
+              const text = await response.text();
+      
+              // 🔁 Append final response to logs
+              logs.push(`\n➡️ Response:\n${text}`);
+              document.getElementById("output").textContent = logs.join("\n");
+            } else {
+              console.log("❌ No fetch() function exported.");
+            }
+          } catch (err) {
+            console.error("⚠️ Error running code:", err);
+            logs.push("⚠️ Error:\n" + err);
+            document.getElementById("output").textContent = logs.join("\n");
           }
-        } catch (err) {
-          console.error("⚠️ Error running code:", err);
-          document.getElementById("output").textContent = "⚠️ Error:\n" + err;
-        }
-      });
-    </script>
+        });
+      </script>
+      
   </body>
 </html>

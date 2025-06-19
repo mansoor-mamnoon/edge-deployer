@@ -13,15 +13,16 @@ declare global {
   }
 }
 
+const DEFAULT_CODE = `export default {
+  async fetch(request) {
+    return new Response("Hello from your deployed API!", {
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+};`.trim();
 
 const App = () => {
-  const [code, setCode] = useState(`export default {
-    async fetch(request) {
-      return new Response("Hello from your deployed API!", {
-        headers: { "Content-Type": "text/plain" },
-      });
-    }
-  };`.trim());
+  const [code, setCode] = useState(DEFAULT_CODE);
 
   const runCode = () => {
     const iframe = document.getElementById("preview-iframe") as HTMLIFrameElement;
@@ -32,8 +33,16 @@ const App = () => {
       console.warn("❌ iframe not found or not ready");
     }
   };
+
+  const resetCode = () => {
+    console.log("🔄 Resetting editor to default code");
+    setCode(DEFAULT_CODE);
   
-  
+    const iframe = document.getElementById("preview-iframe") as HTMLIFrameElement;
+    if (iframe?.contentWindow) {
+      iframe.contentWindow.postMessage(DEFAULT_CODE, "*");
+    }
+  };
 
   return (
     <div style={{ height: "100vh", width: "100vw", display: "flex", flexDirection: "column" }}>
@@ -52,14 +61,22 @@ const App = () => {
         >
           📂 Open
         </button>
+        <button onClick={resetCode}>🔄 Reset</button>
       </div>
-  
+
+      {/* Deployment Panel */}
+      <div className="deployment-panel" style={{ background: "#2c2c2c", padding: "10px", color: "#ccc" }}>
+        <h3>🚀 Deployment Options</h3>
+        <button disabled>Deploy to Cloudflare Workers (Coming Soon)</button>
+        <button disabled style={{ marginLeft: "10px" }}>Deploy to AWS Lambda@Edge (Coming Soon)</button>
+      </div>
+
       {/* Code editor */}
       <div style={{ flexGrow: 1 }}>
         <MonacoEditor code={code} language="javascript" onChange={setCode} />
       </div>
-  
-      {/* 🔹 Preview pane */}
+
+      {/* Preview Pane */}
       <iframe
         id="preview-iframe"
         src="preview.html"
@@ -74,7 +91,6 @@ const App = () => {
       ></iframe>
     </div>
   );
-  
 };
 
 const container = document.getElementById("root");
