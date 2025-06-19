@@ -3,6 +3,12 @@ import * as path from "path";
 import * as fs from "fs";
 import { bundleAndSave } from "./deployer";
 
+import dotenv from "dotenv";
+dotenv.config();
+
+console.log("🔐 CF API Token:", process.env.CF_API_TOKEN);
+
+
 
 
 const createWindow = () => {

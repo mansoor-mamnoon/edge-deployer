@@ -8,13 +8,15 @@
     "webpack:serve": "webpack serve",
     "electron": "wait-on http://localhost:8080 && electron .",
     "build": "tsc && webpack",
-    "dev": "concurrently \"npm:webpack:serve\" \"npm:electron\""
+    "dev": "concurrently \"npm:webpack:serve\" \"npm:electron\"",
+    "electron-dev": "concurrently \"npm run dev\" \"npm run electron\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "dotenv": "^16.5.0",
     "monaco-editor": "^0.52.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
