@@ -32,10 +32,21 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
+const deployer_1 = require("./deployer");
+const deployer_2 = require("./deployer");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+console.log("🔐 CF API Token:", process.env.CF_API_TOKEN);
+electron_1.ipcMain.handle("deploy-to-cloudflare", async (_e, code) => {
+    return (0, deployer_2.uploadToCloudflare)(code);
+});
 const createWindow = () => {
     const win = new electron_1.BrowserWindow({
         width: 1000,
@@ -46,7 +57,6 @@ const createWindow = () => {
         },
     });
     win.loadURL("http://localhost:8080");
-    win.webContents.openDevTools(); // Optional: open devtools for debugging
 };
 electron_1.app.whenReady().then(createWindow);
 // 🔹 Save File Handler
@@ -76,4 +86,9 @@ electron_1.ipcMain.handle("open-file", async () => {
         return content;
     }
     return null;
+});
+electron_1.ipcMain.handle("deploy-code", async (_event, code) => {
+    console.log("🚀 ipcMain: deploy-code triggered");
+    const filePath = await (0, deployer_1.bundleAndSave)(code);
+    return filePath;
 });
