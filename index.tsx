@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import MonacoEditor from "./components/MonacoEditor";
 import "../public/index.css";
 
-
 export {};
 
 declare global {
@@ -17,6 +16,7 @@ declare global {
   }
 }
 
+// ✅ Default Worker code shown in editor
 const DEFAULT_CODE = `addEventListener("fetch", event => {
   event.respondWith(handleRequest(event.request));
 })
@@ -32,19 +32,16 @@ const App = () => {
   const [status, setStatus] = useState("");
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployUrl, setDeployUrl] = useState<string | null>(null);
+  const [statusClass, setStatusClass] = useState("");
 
   const runCode = () => {
     const iframe = document.getElementById("preview-iframe") as HTMLIFrameElement;
     if (iframe?.contentWindow) {
-      console.log("📤 Sending code to preview iframe");
       iframe.contentWindow.postMessage(code, "*");
-    } else {
-      console.warn("❌ iframe not found or not ready");
     }
   };
 
   const resetCode = () => {
-    console.log("🔄 Resetting editor to default code");
     setCode(DEFAULT_CODE);
     const iframe = document.getElementById("preview-iframe") as HTMLIFrameElement;
     if (iframe?.contentWindow) {
@@ -56,38 +53,47 @@ const App = () => {
     try {
       const filePath = await window.electronAPI.deployCode(code);
       console.log("🚀 Deployed to:", filePath);
+      setStatus("✅ File saved locally.");
     } catch (err) {
       console.error("❌ Deployment failed:", err);
+      setStatus("❌ File deployment failed.");
     }
   };
 
   const handleCloudflareDeploy = async () => {
     setIsDeploying(true);
-    setStatus("Deploying to Cloudflare...");
+    setStatus("☁️ Deploying to Cloudflare...");
+    setStatusClass("");
+
     try {
       const res = await window.electronAPI.deployToCloudflare(code);
       console.log("✅ Cloudflare Deploy Successful:", res);
-  
-      localStorage.setItem("lastDeploy", JSON.stringify(res));
-  
+
       const subdomain = "mansoormmamnoon";
       const scriptName = "edge-deployer-script";
       const url = `https://${scriptName}.${subdomain}.workers.dev`;
-  
-      setDeployUrl(url); // This is async-safe
-      setStatus("✅ Deploy successful!");
-      
-      // ✅ Only open window AFTER setting the deploy URL
+      setDeployUrl(url);
+
+      const timestamp = new Date().toISOString();
+      const newEntry = { scriptName, timestamp, url };
+      const existing = JSON.parse(localStorage.getItem("deployHistory") || "[]");
+      existing.unshift(newEntry);
+      localStorage.setItem("deployHistory", JSON.stringify(existing.slice(0, 5)));
+
+      setTimeout(() => {
+        setStatus("✅ Deploy successful!");
+        setStatusClass("status-success");
+      }, 1000);
+
       window.open(url, "_blank");
-  
     } catch (err) {
       console.error("❌ Cloudflare Deploy Failed:", err);
       setStatus("❌ Deploy failed. See console.");
+      setStatusClass("status-error");
     } finally {
       setIsDeploying(false);
     }
   };
-  
 
   return (
     <div style={{ height: "100vh", width: "100vw", display: "flex", flexDirection: "column" }}>
@@ -95,7 +101,7 @@ const App = () => {
       <div style={{ display: "flex", gap: "10px", padding: "8px", background: "#1e1e1e" }}>
         <button onClick={() => window.electronAPI.saveFile(code)}>💾 Save</button>
         <button onClick={runCode}>▶️ Run</button>
-        <button onClick={handleDeploy}>🚀 Deploy</button>
+        <button onClick={handleDeploy}>🗂️ Save File</button>
         <button onClick={handleCloudflareDeploy}>☁️ Deploy to Cloudflare</button>
         <button
           onClick={async () => {
@@ -103,18 +109,18 @@ const App = () => {
             if (content) setCode(content);
           }}
         >
-          📂 Open
+          📂 Open File
         </button>
         <button onClick={resetCode}>🔄 Reset</button>
       </div>
 
-      {/* Status & Spinner */}
-      <div style={{ color: "#ccc", padding: "5px 10px", display: "flex", alignItems: "center" }}>
+      {/* Status + Spinner */}
+      <div className={statusClass} style={{ color: "#ccc", padding: "5px 10px", display: "flex", alignItems: "center" }}>
         {status}
         {isDeploying && <div className="loader" style={{ marginLeft: 10 }}></div>}
       </div>
 
-      {/* Deployed Link */}
+      {/* Link to deployed Cloudflare Worker */}
       {deployUrl && (
         <a
           href={deployUrl}
@@ -126,12 +132,63 @@ const App = () => {
         </a>
       )}
 
-      {/* Editor */}
+      {/* Deployment History */}
+      <div
+        style={{
+          marginTop: "10px",
+          background: "#1c1c1c",
+          padding: "10px",
+          border: "1px solid #333",
+          borderRadius: "5px",
+          marginLeft: "12px",
+          marginRight: "12px",
+          color: "#eee",
+        }}
+      >
+        <h3 style={{ marginTop: 0 }}>📜 Deployment History</h3>
+        <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+          {JSON.parse(localStorage.getItem("deployHistory") || "[]").map((entry: any, index: number) => (
+            <li key={index} style={{ marginBottom: "6px" }}>
+              <a
+                href={entry.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#4af", textDecoration: "none" }}
+              >
+                🔗 {entry.scriptName} @{" "}
+                {new Date(entry.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <button
+          onClick={() => {
+            localStorage.removeItem("deployHistory");
+            window.location.reload();
+          }}
+          style={{
+            marginTop: "10px",
+            background: "#800",
+            color: "#fff",
+            border: "none",
+            padding: "6px 10px",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          🧹 Clear Deployment History
+        </button>
+      </div>
+
+      {/* Monaco Editor */}
       <div style={{ flexGrow: 1 }}>
         <MonacoEditor code={code} language="javascript" onChange={setCode} />
       </div>
 
-      {/* Preview */}
+      {/* Preview iframe */}
       <iframe
         id="preview-iframe"
         src="preview.html"

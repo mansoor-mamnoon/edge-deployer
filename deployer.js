@@ -37,8 +37,8 @@ exports.uploadToCloudflare = exports.bundleAndSave = void 0;
 // electron/deployer.ts
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const cloudflareUploader_1 = require("./cloudflareUploader"); // ✅ import moved function
-Object.defineProperty(exports, "uploadToCloudflare", { enumerable: true, get: function () { return cloudflareUploader_1.uploadToCloudflare; } });
+const cloudflareClient_1 = require("./cloudflareClient"); // ✅ import moved function
+Object.defineProperty(exports, "uploadToCloudflare", { enumerable: true, get: function () { return cloudflareClient_1.uploadToCloudflare; } });
 /**
  * Saves code to disk before uploading or previewing
  * @param code The JS code to save
