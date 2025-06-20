@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "rootDir": "."
   },
-  "include": ["src", "electron"]
+  "include": ["src", "electron", "components", "src/index.tsx"]
 }
