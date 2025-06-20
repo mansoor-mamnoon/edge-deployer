@@ -12,3 +12,14 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
+  .status-success {
+    color: #4caf50; /* Green */
+    font-weight: bold;
+  }
+  
+  .status-error {
+    color: #f44336; /* Red */
+    font-weight: bold;
+  }
+  
