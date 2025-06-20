@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import MonacoEditor from "./components/MonacoEditor";
+import "../public/index.css";
+
 
 export {};
 
@@ -9,21 +11,27 @@ declare global {
     electronAPI: {
       saveFile: (code: string) => void;
       openFile: () => Promise<string | null>;
-      deployCode: (code: string) => Promise<string>; // ✅ NEW
+      deployCode: (code: string) => Promise<string>;
+      deployToCloudflare: (code: string) => Promise<any>;
     };
   }
 }
 
-const DEFAULT_CODE = `export default {
-  async fetch(request) {
-    return new Response("Hello from your deployed API!", {
-      headers: { "Content-Type": "text/plain" },
-    });
-  }
-};`.trim();
+const DEFAULT_CODE = `addEventListener("fetch", event => {
+  event.respondWith(handleRequest(event.request));
+})
+
+async function handleRequest(request) {
+  return new Response("Hello from your deployed API!", {
+    headers: { "Content-Type": "text/plain" },
+  });
+}`.trim();
 
 const App = () => {
   const [code, setCode] = useState(DEFAULT_CODE);
+  const [status, setStatus] = useState("");
+  const [isDeploying, setIsDeploying] = useState(false);
+  const [deployUrl, setDeployUrl] = useState<string | null>(null);
 
   const runCode = () => {
     const iframe = document.getElementById("preview-iframe") as HTMLIFrameElement;
@@ -38,7 +46,6 @@ const App = () => {
   const resetCode = () => {
     console.log("🔄 Resetting editor to default code");
     setCode(DEFAULT_CODE);
-
     const iframe = document.getElementById("preview-iframe") as HTMLIFrameElement;
     if (iframe?.contentWindow) {
       iframe.contentWindow.postMessage(DEFAULT_CODE, "*");
@@ -54,13 +61,42 @@ const App = () => {
     }
   };
 
+  const handleCloudflareDeploy = async () => {
+    setIsDeploying(true);
+    setStatus("Deploying to Cloudflare...");
+    try {
+      const res = await window.electronAPI.deployToCloudflare(code);
+      console.log("✅ Cloudflare Deploy Successful:", res);
+  
+      localStorage.setItem("lastDeploy", JSON.stringify(res));
+  
+      const subdomain = "mansoormmamnoon";
+      const scriptName = "edge-deployer-script";
+      const url = `https://${scriptName}.${subdomain}.workers.dev`;
+  
+      setDeployUrl(url); // This is async-safe
+      setStatus("✅ Deploy successful!");
+      
+      // ✅ Only open window AFTER setting the deploy URL
+      window.open(url, "_blank");
+  
+    } catch (err) {
+      console.error("❌ Cloudflare Deploy Failed:", err);
+      setStatus("❌ Deploy failed. See console.");
+    } finally {
+      setIsDeploying(false);
+    }
+  };
+  
+
   return (
     <div style={{ height: "100vh", width: "100vw", display: "flex", flexDirection: "column" }}>
       {/* Toolbar */}
       <div style={{ display: "flex", gap: "10px", padding: "8px", background: "#1e1e1e" }}>
         <button onClick={() => window.electronAPI.saveFile(code)}>💾 Save</button>
         <button onClick={runCode}>▶️ Run</button>
-        <button onClick={handleDeploy}>🚀 Deploy</button> {/* ✅ NEW */}
+        <button onClick={handleDeploy}>🚀 Deploy</button>
+        <button onClick={handleCloudflareDeploy}>☁️ Deploy to Cloudflare</button>
         <button
           onClick={async () => {
             const content = await window.electronAPI.openFile();
@@ -72,19 +108,30 @@ const App = () => {
         <button onClick={resetCode}>🔄 Reset</button>
       </div>
 
-      {/* Deployment Panel */}
-      <div className="deployment-panel" style={{ background: "#2c2c2c", padding: "10px", color: "#ccc" }}>
-        <h3>🚀 Deployment Options</h3>
-        <button disabled>Deploy to Cloudflare Workers (Coming Soon)</button>
-        <button disabled style={{ marginLeft: "10px" }}>Deploy to AWS Lambda@Edge (Coming Soon)</button>
+      {/* Status & Spinner */}
+      <div style={{ color: "#ccc", padding: "5px 10px", display: "flex", alignItems: "center" }}>
+        {status}
+        {isDeploying && <div className="loader" style={{ marginLeft: 10 }}></div>}
       </div>
 
-      {/* Code Editor */}
+      {/* Deployed Link */}
+      {deployUrl && (
+        <a
+          href={deployUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "#4af", marginLeft: "12px", padding: "5px 10px" }}
+        >
+          🔗 View Deployed Worker
+        </a>
+      )}
+
+      {/* Editor */}
       <div style={{ flexGrow: 1 }}>
         <MonacoEditor code={code} language="javascript" onChange={setCode} />
       </div>
 
-      {/* Preview Pane */}
+      {/* Preview */}
       <iframe
         id="preview-iframe"
         src="preview.html"

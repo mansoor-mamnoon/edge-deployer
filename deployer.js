@@ -32,36 +32,18 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bundleAndSave = exports.uploadToCloudflare = void 0;
+exports.uploadToCloudflare = exports.bundleAndSave = void 0;
 // electron/deployer.ts
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const node_fetch_1 = __importDefault(require("node-fetch")); // Make sure installed with `npm i node-fetch`
-const uploadToCloudflare = async (code) => {
-    const token = process.env.CF_API_TOKEN;
-    const accountId = process.env.CF_ACCOUNT_ID;
-    const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/edge-deployer-script`;
-    const response = await (0, node_fetch_1.default)(url, {
-        method: "PUT",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/javascript",
-        },
-        body: code,
-    });
-    // ✅ Type cast here
-    const data = (await response.json());
-    console.log("🌐 Cloudflare response:", data);
-    if (!data.success) {
-        throw new Error(JSON.stringify(data.errors));
-    }
-    return data;
-};
-exports.uploadToCloudflare = uploadToCloudflare;
+const cloudflareUploader_1 = require("./cloudflareUploader"); // ✅ import moved function
+Object.defineProperty(exports, "uploadToCloudflare", { enumerable: true, get: function () { return cloudflareUploader_1.uploadToCloudflare; } });
+/**
+ * Saves code to disk before uploading or previewing
+ * @param code The JS code to save
+ * @returns Full file path of saved code
+ */
 const bundleAndSave = async (code) => {
     const tempDir = path.join(__dirname, "../temp");
     if (!fs.existsSync(tempDir))
