@@ -17,12 +17,16 @@
   "description": "",
   "dependencies": {
     "dotenv": "^16.5.0",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "monaco-editor": "^0.52.2",
+    "node-fetch": "^3.3.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@types/electron": "^1.6.12",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^24.0.3",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",

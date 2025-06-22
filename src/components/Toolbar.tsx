@@ -1,4 +1,7 @@
 import React from "react";
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+
 
 interface ToolbarProps {
   code: string;
@@ -96,15 +99,34 @@ const Toolbar = ({ code, setCode, setStatus, setIsDeploying, setStatusClass, set
     }
   };
 
+  const handleDownloadZip = async () => {
+    const zip = new JSZip();
+    zip.file("index.js", code);  // adds your current editor code
+  
+    const content = await zip.generateAsync({ type: "blob" });
+    saveAs(content, "edge-function.zip");
+
+    setStatus("✅ ZIP created and downloaded.");
+    setStatusClass("status-success");
+
+  };
+  
+
   return (
     <div style={{ display: "flex", gap: "10px", padding: "8px", background: "#1e1e1e" }}>
       <button className="toolbar-button" onClick={() => window.electronAPI.saveFile(code)}>💾 Save</button>
 <button className="toolbar-button" onClick={runCode}>▶️ Run</button>
 <button className="toolbar-button" onClick={handleDeploy}>🗂️ Save File</button>
 <button className="toolbar-button" onClick={handleCloudflareDeploy}>☁️ Deploy to Cloudflare</button>
+
+<button className="toolbar-button" onClick={handleDownloadZip}>
+  📦 Download ZIP
+</button>
+
 <button className="toolbar-button" onClick={() => setShowConfig(true)}>
   ⚙️ Config
 </button>
+
 
 <button className="toolbar-button" onClick={async () => {
   const content = await window.electronAPI.openFile();

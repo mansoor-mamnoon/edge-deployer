@@ -1,5 +1,8 @@
 export interface EnvConfig {
-    name: string;
-    value: string;
+    cloudProvider: string;
+    apiKey: string;
+    accountId: string;
+    scriptName: string;
+    envVars: { [key: string]: string };
   }
   
