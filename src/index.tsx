@@ -15,6 +15,7 @@ import ConfigModal from "./components/ConfigModal";
 
 
 
+
 const DEFAULT_CODE = `addEventListener("fetch", event => {
   event.respondWith(handleRequest(event.request));
 })
@@ -38,6 +39,7 @@ export interface EnvConfig {
   accountId: string;
   scriptName: string;
   envVars: Record<string, string>;
+  
 }
 
 
@@ -52,6 +54,7 @@ const App = () => {
   const [requestInput, setRequestInput] = useState('');
   const [requestMethod, setRequestMethod] = useState<"GET" | "POST">("POST");
   const [showConfig, setShowConfig] = useState(false);
+
 
   
   
@@ -69,6 +72,7 @@ const App = () => {
   setStatusClass={setStatusClass}
   setDeployUrl={setDeployUrl}
   setShowConfig={setShowConfig} 
+  
 />
 
 
@@ -77,7 +81,9 @@ const App = () => {
       {/* === Editor + Deploy Panel Row === */}
       <div className="row" style={{ padding: "0 12px" }}>
         <div style={{ flex: 2 }}>
-          <MonacoEditor code={code} language="javascript" onChange={setCode} />
+        <MonacoEditor code={code} setCode={setCode} language="javascript" />
+
+
         </div>
         <div style={{ flex: 1 }}>
           <div className="panel">
