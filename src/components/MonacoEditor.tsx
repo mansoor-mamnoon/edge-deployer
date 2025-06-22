@@ -1,5 +1,6 @@
 import * as monaco from "monaco-editor";
 import React, { useEffect, useRef } from "react";
+import "monaco-editor/min/vs/editor/editor.main.css"; // ✅ Required to render styles
 
 interface MonacoEditorProps {
   code: string;
@@ -11,14 +12,14 @@ const MonacoEditor = ({ code, language, onChange }: MonacoEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const monacoRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-  // Initial mount
+  // Mount Monaco
   useEffect(() => {
     if (editorRef.current) {
       monacoRef.current = monaco.editor.create(editorRef.current, {
         value: code,
         language: language,
-        automaticLayout: true,
         theme: "vs-dark",
+        automaticLayout: true,
         fontSize: 14,
         minimap: { enabled: false },
       });
@@ -35,14 +36,26 @@ const MonacoEditor = ({ code, language, onChange }: MonacoEditorProps) => {
     };
   }, []);
 
-  // ✨ Update editor content if `code` changes externally (e.g. file open)
+  // Update externally changed code
   useEffect(() => {
     if (monacoRef.current && code !== monacoRef.current.getValue()) {
       monacoRef.current.setValue(code);
     }
   }, [code]);
 
-  return <div ref={editorRef} style={{ height: "100%", width: "100%" }} />;
+  return (
+    <div
+      ref={editorRef}
+      style={{
+        height: "400px",        // ✅ Fixed height ensures visibility
+        width: "100%",
+        border: "1px solid #444",
+        margin: "12px 0",
+        borderRadius: "5px",
+        overflow: "hidden",
+      }}
+    />
+  );
 };
 
 export default MonacoEditor;

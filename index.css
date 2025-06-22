@@ -28,6 +28,64 @@
     flex-direction: column;
     height: 100vh;
   }
+
+  /* === Base Styling Reset === */
+body {
+  margin: 0;
+  background-color: #121212;
+  color: #f5f5f5;
+  font-family: 'Inter', sans-serif;
+}
+
+/* === Shared Panel Styling === */
+.panel {
+  background: #1e1e1e;
+  padding: 16px;
+  margin: 12px;
+  border-radius: 8px;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.1);
+}
+
+/* === Toolbar Buttons === */
+.toolbar-button {
+  background: #2a2a2a;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  margin-right: 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.toolbar-button:hover {
+  background: #444;
+}
+
+/* === Status === */
+.status-success {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.status-error {
+  color: #f44336;
+  font-weight: bold;
+}
+
+/* === Flex layout helpers === */
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
   
 
 

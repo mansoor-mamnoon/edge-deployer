@@ -1,6 +1,6 @@
-// electron/cloudflareUploader.ts
+// src/utils/cloudflareClient.ts
 
-import fetch from "node-fetch"; // Make sure installed with `npm i node-fetch`
+import fetch from "node-fetch"; // Needed for Node/Electron
 
 interface CloudflareResponse {
   success: boolean;
@@ -10,37 +10,37 @@ interface CloudflareResponse {
 }
 
 /**
- * Uploads code to Cloudflare Workers using the API
- * @param code The JavaScript code to upload
- * @returns Cloudflare API response or throws an error
- *
- * 🔐 Requires environment variables:
- *   - CF_API_TOKEN: API token with permissions:
- *     • Workers Scripts: Edit
- *     • (Optional) Workers Routes: Edit — if you’re routing through custom domains
- *   - CF_ACCOUNT_ID: Your Cloudflare account ID
+ * Uploads a script to Cloudflare Workers using user-provided credentials.
+ * @param userCode The JavaScript code to upload
  */
-export const uploadToCloudflare = async (code: string) => {
-  const token = process.env.CF_API_TOKEN!;
-  const accountId = process.env.CF_ACCOUNT_ID!;
+export const uploadToCloudflare = async (userCode: string) => {
+  // Step 1: Get stored credentials from localStorage
+  const config = JSON.parse(localStorage.getItem("envConfig") || "{}");
 
-  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/edge-deployer-script`;
-
-  const response = await fetch(url, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/javascript",
-    },
-    body: code,
-  });
-
-  const data = (await response.json()) as CloudflareResponse;
-  console.log("🌐 Cloudflare response:", JSON.stringify(data, null, 2));
-
-  if (!data.success) {
-    throw new Error(JSON.stringify(data.errors));
+  if (!config.apiKey || !config.accountId || !config.scriptName) {
+    throw new Error("Missing API key, Account ID, or Script Name. Please fill out the config panel.");
   }
 
-  return data;
+  // Step 2: Construct Cloudflare endpoint
+  const url = `https://api.cloudflare.com/client/v4/accounts/${config.accountId}/workers/scripts/${config.scriptName}`;
+
+  // Step 3: Make the PUT request
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${config.apiKey}`,
+      "Content-Type": "application/javascript",
+    },
+    body: userCode,
+  });
+
+  const result = (await res.json()) as CloudflareResponse;
+
+  // Step 4: Check for success
+  if (!result.success) {
+    console.error("Cloudflare upload failed:", result.errors);
+    throw new Error("Upload failed. See console for details.");
+  }
+
+  return result;
 };
