@@ -1,7 +1,17 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as path from "path";
 import * as fs from "fs";
+import { bundleAndSave } from "./deployer";
+import { uploadToCloudflare } from "./deployer";
 
+import dotenv from "dotenv";
+dotenv.config();
+
+console.log("🔐 CF API Token:", process.env.CF_API_TOKEN);
+
+ipcMain.handle("deploy-to-cloudflare", async (_e, code: string) => {
+  return uploadToCloudflare(code);
+});
 
 
 const createWindow = () => {
@@ -57,3 +67,9 @@ ipcMain.handle("open-file", async () => {
   return null;
 });
 
+
+ipcMain.handle("deploy-code", async (_event, code: string) => {
+  console.log("🚀 ipcMain: deploy-code triggered");
+  const filePath = await bundleAndSave(code);
+  return filePath;
+});

@@ -13,6 +13,9 @@ interface LogPanelProps {
 
 const LogPanel: React.FC<LogPanelProps> = ({ logs, setLogs }) => {
   return (
+
+    <div className="panel">
+  
     <div style={{ background: "#121212", padding: "10px", margin: "12px", borderRadius: "5px" }}>
       <h3 style={{ color: "#fff" }}>📡 API Logs</h3>
       <button
@@ -39,6 +42,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ logs, setLogs }) => {
           </li>
         ))}
       </ul>
+    </div>
     </div>
   );
 };

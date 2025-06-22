@@ -45,10 +45,16 @@ module.exports = {
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, 'public'), // ✅ serve public/ folder
+      directory: path.join(__dirname, 'public'),
     },
     compress: true,
     port: 8080,
+  
+    client: {
+      overlay: false, // ✅ turns off overlay completely
+      logging: 'info',
+    },
   },
   
-};
+  }
+  

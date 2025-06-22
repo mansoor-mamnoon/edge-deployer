@@ -80,17 +80,25 @@ const TestPanel: React.FC<TestPanelProps> = ({
           Method:
         </label>
         <select
-          id="method"
-          value={requestMethod}
-          onChange={(e) => setRequestMethod(e.target.value as "GET" | "POST")}
-          style={{ padding: "5px" }}
-        >
+  id="method"
+  className="toolbar-button"
+  value={requestMethod}
+  onChange={(e) => setRequestMethod(e.target.value as "GET" | "POST")}
+>
+
           <option value="POST">POST</option>
           <option value="GET">GET</option>
         </select>
       </div>
 
-      <button onClick={handleSendRequest}>🧪 Send Request</button>
+      <button
+  className="toolbar-button"
+  style={{ alignSelf: "flex-start", marginTop: "8px" }}
+  onClick={handleSendRequest}
+>
+  🧪 Send Request
+</button>
+
     </div>
   );
 };

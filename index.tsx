@@ -22,6 +22,13 @@ async function handleRequest(request) {
   });
 }`.trim();
 
+window.addEventListener("error", (e) => {
+  if (e.message === "ResizeObserver loop completed with undelivered notifications.") {
+    e.stopImmediatePropagation();
+  }
+});
+
+
 const App = () => {
   const [code, setCode] = useState(DEFAULT_CODE);
   const [status, setStatus] = useState("");
@@ -36,45 +43,77 @@ const App = () => {
 
   return (
     <div className="app-container">
-      <Toolbar
-  code={code}
-  setCode={setCode}
-  setStatus={setStatus}
-  setIsDeploying={setIsDeploying}
-  setStatusClass={setStatusClass}
-  setDeployUrl={setDeployUrl}
-/>
-
-<DeploymentPanel
-  status={status}
-  isDeploying={isDeploying}
-  deployUrl={deployUrl}
-  statusClass={statusClass}
-/>
-
-
-
-      <TestPanel
-        deployUrl={deployUrl}
-        requestInput={requestInput}
-        setRequestInput={setRequestInput}
-        requestMethod={requestMethod}
-        setRequestMethod={setRequestMethod}
-        setLogs={setLogs}
-      />
-
-      <LogPanel logs={logs} setLogs={setLogs} />
-
-      <MonacoEditor code={code} language="javascript" onChange={setCode} />
-
-      <iframe
-        id="preview-iframe"
-        src="preview.html"
-        title="Preview"
-        className="preview-frame"
-      ></iframe>
+  
+      {/* === Toolbar === */}
+      <div className="panel row" style={{ alignItems: "center", justifyContent: "space-between" }}>
+        <Toolbar
+          code={code}
+          setCode={setCode}
+          setStatus={setStatus}
+          setIsDeploying={setIsDeploying}
+          setStatusClass={setStatusClass}
+          setDeployUrl={setDeployUrl}
+        />
+      </div>
+  
+      {/* === Editor + Deploy Panel Row === */}
+      <div className="row" style={{ padding: "0 12px" }}>
+        <div style={{ flex: 2 }}>
+          <MonacoEditor code={code} language="javascript" onChange={setCode} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div className="panel">
+            <DeploymentPanel
+              status={status}
+              isDeploying={isDeploying}
+              deployUrl={deployUrl}
+              statusClass={statusClass}
+            />
+          </div>
+        </div>
+      </div>
+  
+      {/* === Preview Output === */}
+      <div className="panel" style={{ margin: "12px" }}>
+        <h3>🧠 Preview Output</h3>
+        <iframe
+          id="preview-iframe"
+          src="preview.html"
+          title="Preview"
+          className="preview-frame"
+          style={{
+            width: "100%",
+            height: "200px",
+            background: "#1e1e1e",
+            border: "1px solid #333",
+            borderRadius: "5px",
+          }}
+        ></iframe>
+      </div>
+  
+      {/* === Test Panel + Logs === */}
+      <div className="row">
+        <div style={{ flex: 1 }}>
+          <div className="panel">
+            <TestPanel
+              deployUrl={deployUrl}
+              requestInput={requestInput}
+              setRequestInput={setRequestInput}
+              requestMethod={requestMethod}
+              setRequestMethod={setRequestMethod}
+              setLogs={setLogs}
+            />
+          </div>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div className="panel">
+            <LogPanel logs={logs} setLogs={setLogs} />
+          </div>
+        </div>
+      </div>
     </div>
   );
+  
 };
 
 export default App;

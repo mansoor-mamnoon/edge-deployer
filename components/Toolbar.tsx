@@ -95,19 +95,18 @@ const Toolbar = ({ code, setCode, setStatus, setIsDeploying, setStatusClass, set
 
   return (
     <div style={{ display: "flex", gap: "10px", padding: "8px", background: "#1e1e1e" }}>
-      <button onClick={() => window.electronAPI.saveFile(code)}>💾 Save</button>
-      <button onClick={runCode}>▶️ Run</button>
-      <button onClick={handleDeploy}>🗂️ Save File</button>
-      <button onClick={handleCloudflareDeploy}>☁️ Deploy to Cloudflare</button>
-      <button
-        onClick={async () => {
-          const content = await window.electronAPI.openFile();
-          if (content) setCode(content);
-        }}
-      >
-        📂 Open File
-      </button>
-      <button onClick={resetCode}>🔄 Reset</button>
+      <button className="toolbar-button" onClick={() => window.electronAPI.saveFile(code)}>💾 Save</button>
+<button className="toolbar-button" onClick={runCode}>▶️ Run</button>
+<button className="toolbar-button" onClick={handleDeploy}>🗂️ Save File</button>
+<button className="toolbar-button" onClick={handleCloudflareDeploy}>☁️ Deploy to Cloudflare</button>
+<button className="toolbar-button" onClick={async () => {
+  const content = await window.electronAPI.openFile();
+  if (content) setCode(content);
+}}>
+  📂 Open File
+</button>
+<button className="toolbar-button" onClick={resetCode}>🔄 Reset</button>
+
     </div>
   );
 };
