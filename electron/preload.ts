@@ -1,6 +1,4 @@
-// electron/preload.ts
 import { contextBridge, ipcRenderer } from "electron";
-
 
 contextBridge.exposeInMainWorld("electronAPI", {
   saveFile: (code: string) => {
@@ -13,11 +11,16 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
   deployCode: (code: string) => {
     console.log("🚀 deployCode called from renderer");
-    return ipcRenderer.invoke("deploy-code", code); // ✅ ADD THIS
+    return ipcRenderer.invoke("deploy-code", code);
+  },
+  deployToCloudflare: (code: string) => {
+    return ipcRenderer.invoke("deploy-to-cloudflare", code);
   },
 
-  deployToCloudflare: (code: string) =>
-  ipcRenderer.invoke("deploy-to-cloudflare", code),
-
+  // ✅ Add this block here
+  deployToCloud: async (code: string, config: any) => {
+    console.log("🚀 deployToCloud called from renderer");
+    const { deployToSelectedCloud } = await import("../multiCloudDeployer");
+    return await deployToSelectedCloud(code, config);
+  },
 });
-

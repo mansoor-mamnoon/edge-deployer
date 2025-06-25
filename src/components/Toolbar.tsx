@@ -22,9 +22,11 @@ declare global {
       openFile: () => Promise<string | null>;
       deployCode: (code: string) => Promise<string>;
       deployToCloudflare: (code: string) => Promise<any>;
+      deployToCloud: (code: string, config: any) => Promise<{ url: string }>; // ✅ Add this line
     };
   }
 }
+
 
 const DEFAULT_CODE = `addEventListener("fetch", event => {
   event.respondWith(handleRequest(event.request));
@@ -64,40 +66,39 @@ const Toolbar = ({ code, setCode, setStatus, setIsDeploying, setStatusClass, set
     }
   };
 
-  const handleCloudflareDeploy = async () => {
+  const handleMultiCloudDeploy = async () => {
+    const config = JSON.parse(localStorage.getItem("envConfig") || "{}");
     setIsDeploying(true);
-    setStatus("\u2601\uFE0F Deploying to Cloudflare...");
+    setStatus(`🚀 Deploying to ${config.cloudProvider || "?"}...`);
     setStatusClass("");
-
+  
     try {
-      const res = await window.electronAPI.deployToCloudflare(code);
-      console.log("\u2705 Cloudflare Deploy Successful:", res);
-
-      const subdomain = "mansoormmamnoon";
-      const scriptName = "edge-deployer-script";
-      const url = `https://${scriptName}.${subdomain}.workers.dev`;
-      setDeployUrl(url);
-
+      const res = await window.electronAPI.deployToCloud(code, config);
+      console.log(`✅ Deploy Successful:`, res);
+  
+      setDeployUrl(res.url);
+  
       const timestamp = new Date().toISOString();
-      const newEntry = { scriptName, timestamp, url };
+      const newEntry = { scriptName: config.scriptName, timestamp, url: res.url };
       const existing = JSON.parse(localStorage.getItem("deployHistory") || "[]");
       existing.unshift(newEntry);
       localStorage.setItem("deployHistory", JSON.stringify(existing.slice(0, 5)));
-
+  
       setTimeout(() => {
-        setStatus("\u2705 Deploy successful!");
+        setStatus("✅ Deploy successful!");
         setStatusClass("status-success");
-      }, 1000);
-
-      window.open(url, "_blank");
+      }, 800);
+  
+      window.open(res.url, "_blank");
     } catch (err) {
-      console.error("\u274C Cloudflare Deploy Failed:", err);
-      setStatus("\u274C Deploy failed. See console.");
+      console.error("❌ Deploy Failed:", err);
+      setStatus("❌ Deploy failed. See console.");
       setStatusClass("status-error");
     } finally {
       setIsDeploying(false);
     }
   };
+  
 
   const handleDownloadZip = async () => {
     const zip = new JSZip();
@@ -117,7 +118,10 @@ const Toolbar = ({ code, setCode, setStatus, setIsDeploying, setStatusClass, set
       <button className="toolbar-button" onClick={() => window.electronAPI.saveFile(code)}>💾 Save</button>
 <button className="toolbar-button" onClick={runCode}>▶️ Run</button>
 <button className="toolbar-button" onClick={handleDeploy}>🗂️ Save File</button>
-<button className="toolbar-button" onClick={handleCloudflareDeploy}>☁️ Deploy to Cloudflare</button>
+<button className="toolbar-button" onClick={handleMultiCloudDeploy}>
+  ☁️ Deploy to Selected Cloud
+</button>
+
 
 <button className="toolbar-button" onClick={handleDownloadZip}>
   📦 Download ZIP
