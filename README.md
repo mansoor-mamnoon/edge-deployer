@@ -93,7 +93,7 @@ Unlike typical CRUD or front-end apps, **Edge Deployer**:
 
 **Mansoor Mamnoon**  
 UC Berkeley • Software Engineer • Systems + Infra Enthusiast  
-🔗 [LinkedIn](https://www.linkedin.com/in/mansoor-mamnoon) • 🌐 [Portfolio](#)
+🔗 [LinkedIn](https://www.linkedin.com/in/mansoormamnoon) • 🌐 [Portfolio](#)
 
 ---
 
