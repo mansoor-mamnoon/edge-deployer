@@ -73,3 +73,20 @@ ipcMain.handle("deploy-code", async (_event, code: string) => {
   const filePath = await bundleAndSave(code);
   return filePath;
 });
+
+ipcMain.handle("download-pulumi", async (_event, config: any, code: string) => {
+  const { generatePulumiCloudflare } = await import("./generatePulumiCloudflare");
+  const jszip = require("jszip");
+  const { saveAs } = require("file-saver");
+
+  const pulumiCode = generatePulumiCloudflare(config, code, true);
+  const zip = new jszip();
+  zip.file("Pulumi.yaml", `name: cloudflare-worker\ndescription: Infra as code demo\nruntime: nodejs`);
+  zip.file("index.ts", pulumiCode);
+
+  const content = await zip.generateAsync({ type: "nodebuffer" });
+  const filePath = path.join(app.getPath("downloads"), "pulumi-cloudflare.zip");
+  fs.writeFileSync(filePath, content);
+
+  return filePath;
+});

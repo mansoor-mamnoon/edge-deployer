@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
+import { deployToSelectedCloud } from "./multiCloudDeployer"; // ✅ correct path
 
 contextBridge.exposeInMainWorld("electronAPI", {
   saveFile: (code: string) => {
@@ -16,11 +17,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   deployToCloudflare: (code: string) => {
     return ipcRenderer.invoke("deploy-to-cloudflare", code);
   },
-
-  // ✅ Add this block here
-  deployToCloud: async (code: string, config: any) => {
+  deployToCloud: (code: string, config: any) => {
     console.log("🚀 deployToCloud called from renderer");
-    const { deployToSelectedCloud } = await import("../multiCloudDeployer");
-    return await deployToSelectedCloud(code, config);
+    return deployToSelectedCloud(code, config); // ✅ sync wrapper around async function
   },
+
+  downloadPulumi: (config: any, code: string) => {
+    return ipcRenderer.invoke("download-pulumi", config, code);
+  }
+  
 });
