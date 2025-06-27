@@ -12,7 +12,7 @@
 - ☁️ Deploy to **Cloudflare Workers** with custom config
 - 📥 **Download Pulumi IaC ZIP** (Pulumi.yaml + tsconfig + index.ts) for Cloudflare
 - 🛠️ Configurable settings (script name, credentials) via UI
-- 📦 Download deployable ZIP for general serverless packaging
+- 📦 Download deployable ZIP for general serverless packaging 
 
 ---
 
