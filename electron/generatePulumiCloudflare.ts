@@ -3,6 +3,8 @@ import path from "path";
 import { EnvConfig } from "../src/types";
 
 
+
+
 export function generatePulumiCloudflare(config: EnvConfig, code: string, returnOnly: boolean = false): string | void {
 
     const { cfAccountId, cfApiToken, cfScriptName } = config;

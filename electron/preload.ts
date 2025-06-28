@@ -24,6 +24,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   downloadPulumi: (config: any, code: string) => {
     return ipcRenderer.invoke("download-pulumi", config, code);
-  }
+  },
+
+  onDeployLog: (callback: (log: string) => void) => {
+    ipcRenderer.on("deploy-log", (_event, log) => callback(log));
+  },
   
 });

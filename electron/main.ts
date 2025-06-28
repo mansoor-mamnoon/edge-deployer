@@ -7,11 +7,40 @@ import { uploadToCloudflare } from "./deployer";
 import dotenv from "dotenv";
 dotenv.config();
 
+function sendLog(win: BrowserWindow, line: string) {
+  win.webContents.send("deploy-log", line);
+}
+
+
 console.log("🔐 CF API Token:", process.env.CF_API_TOKEN);
 
-ipcMain.handle("deploy-to-cloudflare", async (_e, code: string) => {
-  return uploadToCloudflare(code);
+ipcMain.handle("deploy-to-cloudflare", async (_event, code: string) => {
+  const win = BrowserWindow.getAllWindows()[0]; // Get the current window
+
+  sendLog(win, "✅ Starting deployment...");
+  sendLog(win, "📦 Bundling files...");
+
+  try {
+    const result = await uploadToCloudflare(code);
+    sendLog(win, "☁️ Uploading to Cloudflare...");
+    sendLog(win, "✅ Deploy complete!");
+    sendLog(win, "✅ Starting deployment...");
+    sendLog(win, "Bundling files...");
+    sendLog(win, "Uploading to AWS...");
+    sendLog(win, "✅ Deploy complete!");
+
+    return result;
+  } catch (error) {
+    if (error instanceof Error) {
+      sendLog(win, `❌ Deployment failed: ${error.message}`);
+    } else {
+      sendLog(win, `❌ Deployment failed: ${String(error)}`);
+    }
+    throw error;
+  }
+  
 });
+
 
 
 const createWindow = () => {

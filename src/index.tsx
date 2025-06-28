@@ -1,7 +1,7 @@
 // Modularized version of your original UI
 // Root: App.tsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Toolbar from "./components/Toolbar";
 import DeploymentPanel from "./components/DeploymentPanel";
 import TestPanel from "./components/TestPanel";
@@ -10,6 +10,8 @@ import MonacoEditor from "./components/MonacoEditor";
 import "../public/index.css";
 import ReactDOM from "react-dom/client";
 import ConfigModal from "./components/ConfigModal";
+import DeployLogPanel from "./components/DeployLogPanel";
+
 
 
 
@@ -54,7 +56,22 @@ const App = () => {
   const [requestInput, setRequestInput] = useState('');
   const [requestMethod, setRequestMethod] = useState<"GET" | "POST">("POST");
   const [showConfig, setShowConfig] = useState(false);
+  const [deployLogs, setDeployLogs] = useState<{ message: string; type: string; timestamp: string }[]>([]);
 
+  useEffect(() => {
+    if (window.electronAPI?.onDeployLog) {
+      window.electronAPI.onDeployLog((line: string) => {
+        const timestamp = new Date().toLocaleTimeString();
+        let type = "info";
+        if (line.includes("ERROR") || line.includes("❌")) type = "error";
+        else if (line.includes("SUCCESS") || line.includes("✅")) type = "success";
+        else if (line.includes("WARNING") || line.includes("⚠️")) type = "warning";
+  
+        setDeployLogs(prev => [...prev, { message: line, type, timestamp }]);
+      });
+    }
+  }, []);
+  
 
   
   
@@ -96,6 +113,14 @@ const App = () => {
           </div>
         </div>
       </div>
+
+      {deployLogs.length > 0 && (
+  <div className="panel">
+    <h3>📟 Deploy Logs</h3>
+    <DeployLogPanel logs={deployLogs} />
+  </div>
+)}
+
   
       {/* === Preview Output === */}
       <div className="panel" style={{ margin: "12px" }}>

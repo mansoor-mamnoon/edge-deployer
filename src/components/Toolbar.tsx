@@ -21,6 +21,7 @@ declare global {
       deployToCloudflare: (code: string) => Promise<any>;
       deployToCloud: (code: string, config: any) => Promise<{ url: string }>;
       downloadPulumi: (config: any, code: string) => Promise<string>;
+      onDeployLog: (callback: (log: string) => void) => void;
     };
   }
 }
