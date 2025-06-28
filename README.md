@@ -1,5 +1,11 @@
 # ⚡ Edge Deployer – Serverless IDE for Multi-Cloud Deployment
 
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Electron](https://img.shields.io/badge/Electron-47848F?style=flat&logo=electron&logoColor=white)
+![MIT License](https://img.shields.io/badge/License-MIT-green.svg)
+![GitHub stars](https://img.shields.io/github/stars/mansoor-mamnoon/edge-deployer?style=social)
+
+
 **Edge Deployer** is a lightweight Electron-based IDE for building, previewing, and deploying serverless functions to edge platforms. Built for developers who want CLI-free cloud deployment — with one-click support for Cloudflare Workers and Infrastructure-as-Code generation via Pulumi.
 
 ---
