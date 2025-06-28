@@ -4,6 +4,10 @@
 
 ---
 
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/26a50f46-86b0-4e09-9f1f-739d0d53e8f9" />
+
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/0d624cb9-d725-43e2-9472-825d2fb18674" />
+
 ## ✅ Current Capabilities
 
 - 🖥️ Write and preview JavaScript serverless functions in a local IDE
