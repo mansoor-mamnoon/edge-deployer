@@ -6,5 +6,36 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <script>
+      window.addEventListener("message", async (event) => {
+        const { type, code } = event.data || {};
+    
+        if (type === "run-code") {
+          try {
+            const fn = new Function(code);
+            fn();
+    
+            const hadFetch = code.includes("fetch") || code.includes("handleRequest");
+    
+            window.parent.postMessage({
+              type: "preview-success",
+              status: hadFetch ? "200 OK" : "No fetch() found"
+            }, "*");
+    
+          } catch (err) {
+            window.parent.postMessage({
+              type: "preview-error",
+              message: err.message
+            }, "*");
+          }
+        }
+      });
+    </script>
+    
+
+
+
+
   </body>
 </html>

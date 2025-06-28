@@ -26,15 +26,37 @@ declare global {
   }
 }
 
-const DEFAULT_CODE = `addEventListener("fetch", event => {
+const DEFAULT_CODE = `
+addEventListener("fetch", event => {
   event.respondWith(handleRequest(event.request));
 })
 
 async function handleRequest(request) {
-  return new Response("Hello from your deployed API!", {
-    headers: { "Content-Type": "text/plain" },
+  return new Response(\`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body {
+            background-color: #121212;
+            color: white;
+            font-family: monospace;
+            padding: 1em;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Hello from your deployed API!</h1>
+        <p>This is your preview output.</p>
+      </body>
+    </html>
+  \`, {
+    headers: { "Content-Type": "text/html" }
   });
-}`.trim();
+}
+`.trim();
+
 
 const Toolbar = ({
   code,
@@ -49,7 +71,10 @@ const Toolbar = ({
   const runCode = () => {
     const iframe = document.getElementById("preview-iframe") as HTMLIFrameElement;
     if (iframe?.contentWindow) {
-      iframe.contentWindow.postMessage(code, "*");
+      iframe.contentWindow.postMessage({ type: "preview-started" }, "*");
+setTimeout(() => {
+  iframe.contentWindow?.postMessage({ type: "run-code", code }, "*");
+}, 100); // tiny delay ensures loading state appears first
     }
   };
 
