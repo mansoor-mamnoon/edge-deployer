@@ -11,6 +11,8 @@ import "../public/index.css";
 import ReactDOM from "react-dom/client";
 import ConfigModal from "./components/ConfigModal";
 import DeployLogPanel from "./components/DeployLogPanel";
+import DeployHistoryPanel from "./components/DeployHistoryPanel";
+
 
 
 
@@ -120,6 +122,9 @@ const App = () => {
     <DeployLogPanel logs={deployLogs} />
   </div>
 )}
+
+<DeployHistoryPanel />
+
 
   
       {/* === Preview Output === */}

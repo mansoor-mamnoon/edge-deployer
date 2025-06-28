@@ -92,7 +92,13 @@ const Toolbar = ({
 
       const timestamp = new Date().toISOString();
       const scriptName = config.scriptName || config.cfScriptName || config.awsLambdaName || config.vercelProjectId;
-      const newEntry = { scriptName, timestamp, url: res.url };
+      const newEntry = {
+        scriptName,
+        timestamp,
+        cloudProvider: config.cloudProvider,
+        deployUrl: res.url,
+      };
+      
       const existing = JSON.parse(localStorage.getItem("deployHistory") || "[]");
       existing.unshift(newEntry);
       localStorage.setItem("deployHistory", JSON.stringify(existing.slice(0, 5)));
