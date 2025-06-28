@@ -26,7 +26,7 @@
   - Color-coded messages (✅ success, ⚠️ warning, ❌ error)
   - IPC communication between Electron and UI
 - 🧪 Built-in test panel for API request preview
-- - 📦 **Deploy History Panel**: Displays your last 5 deployments with timestamp, cloud provider, and deploy URL — saved locally for persistence across sessions.
+- 📦 **Deploy History Panel**: Displays your last 5 deployments with timestamp, cloud provider, and deploy URL — saved locally for persistence across sessions.
 
 
 
