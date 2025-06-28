@@ -16,6 +16,18 @@
 
 ---
 
+## ✨ Features
+
+- ⚡ One-click deployment to Cloudflare Workers (AWS and Vercel support scaffolded)
+- 📝 Live code editor with Monaco (VSCode-style)
+- 🔐 Environment variable config modal
+- 📟 **Real-time Deploy Logs** with:
+  - Timestamped log lines
+  - Color-coded messages (✅ success, ⚠️ warning, ❌ error)
+  - IPC communication between Electron and UI
+- 🧪 Built-in test panel for API request preview
+
+
 ## 🛠️ Stack Overview
 
 | Layer          | Tech Used                                      |
