@@ -129,10 +129,6 @@ UC Berkeley • Software Engineer • Systems + Infra Enthusiast
 
 ---
 
-## 🖼️ Screenshot
-
-<img width="1512" alt="image" src="https://github.com/user-attachments/assets/38176360-f4c4-4157-aaf5-8663908b645b" />
-
 
 
 ## 🛠️ To Run Locally
