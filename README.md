@@ -28,6 +28,13 @@
 - 🧪 Built-in test panel for API request preview
 - 📦 **Deploy History Panel**: Displays your last 5 deployments with timestamp, cloud provider, and deploy URL — saved locally for persistence across sessions.
 
+### 🧠 Live Preview Enhancements
+
+- Shows real-time status of your code's output (e.g., ✅ 200 OK or ❌ error)
+- Displays detailed error messages directly inside the preview panel
+- Includes a loading animation while your code is being processed
+
+
 
 
 ## 🛠️ Stack Overview
