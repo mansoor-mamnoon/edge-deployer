@@ -1,16 +1,16 @@
 # ⚡ Edge Deployer — Zero-Config Serverless IDE for Multi-Cloud APIs
 
+> **🧩 Drag-and-drop desktop IDE for instantly deploying JS/TS APIs to Cloudflare, AWS, and Vercel — no config, no terminal, just deploy.**
+
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
 ![Electron](https://img.shields.io/badge/Electron-47848F?style=flat&logo=electron&logoColor=white)
 ![Pulumi](https://img.shields.io/badge/Pulumi-infra--as--code-purple?style=flat&logo=pulumi&logoColor=white)
 ![Cloudflare Workers](https://img.shields.io/badge/Cloudflare_Workers-FA743E?style=flat&logo=cloudflare&logoColor=white)
 ![Last Commit](https://img.shields.io/github/last-commit/mansoor-mamnoon/edge-deployer)
 ![Open Issues](https://img.shields.io/github/issues/mansoor-mamnoon/edge-deployer)
+![Closed Issues](https://img.shields.io/github/issues-closed/mansoor-mamnoon/edge-deployer)
 ![GitHub stars](https://img.shields.io/github/stars/mansoor-mamnoon/edge-deployer?style=social)
 ![MIT License](https://img.shields.io/badge/License-MIT-green.svg)
-
-**Edge Deployer** is a no-code, drag-and-drop Electron IDE for deploying serverless APIs to multiple clouds.  
-Powered by Monaco, Pulumi, and a modular deployment layer — all **without using the CLI.**
 
 > A multi-cloud deployment IDE for solo devs, teams, and builders who hate YAML.
 
@@ -22,6 +22,7 @@ Powered by Monaco, Pulumi, and a modular deployment layer — all **without usin
 - [Demo](#-demo)
 - [Features](#-key-features)
 - [Install](#-install)
+- [Documentation](#-documentation)
 - [Architecture](#-system-architecture)
 - [How It Works](#-how-it-works-step-by-step)
 - [Tech Stack](#-tech-stack)
@@ -37,15 +38,15 @@ Powered by Monaco, Pulumi, and a modular deployment layer — all **without usin
 
 ## 🔥 Why Edge Deployer?
 
-Cloud deployment should feel like clicking “Run,” not reading AWS docs for 45 minutes.  
-Edge Deployer simplifies the dev → test → deploy loop:
+Cloud deployment should feel like clicking “Run,” not configuring IAM.  
+Edge Deployer removes devops friction and replaces it with velocity:
 
-- ✅ Write edge functions in JavaScript/TypeScript
-- ✅ Preview instantly in a secure iframe
-- ✅ Deploy to Cloudflare, AWS Lambda, or Vercel in 1 click
-- ✅ View deploy logs and test the live endpoint — all inside the app
+- ✅ Write JS/TS edge functions
+- ✅ Preview instantly in-browser
+- ✅ Deploy to Cloudflare, AWS, or Vercel — no CLI, no YAML
+- ✅ View logs and test endpoints — all in one UI
 
-Perfect for solo devs, hackathon teams, or internal tools — without the infra setup headache.
+Perfect for solo devs, hackathon teams, or internal APIs that need to ship now.
 
 ---
 
@@ -56,53 +57,43 @@ Perfect for solo devs, hackathon teams, or internal tools — without the infra 
 </p>
 <p align="center"><i>Live-edit → Preview → One-click Deploy</i></p>
 
+> 🎯 Tip: A version with mouse cursor and annotations is in progress.  
+> Want to contribute a screencast or Loom walk-through? [Open an issue](https://github.com/mansoor-mamnoon/edge-deployer/issues)!
+
 ---
 
 ## ✨ Key Features
 
-### 🧠 Code + Preview
-- Monaco editor with dark mode, drag-and-drop file support
-- Live preview iframe executes fetch handlers + logs output
-- Real-time feedback: `✅ 200 OK`, `❌ Error`, or console output
-
-### ☁️ Deploy in One Click
-- Supports **Cloudflare Workers** (via Pulumi), AWS Lambda, Vercel
-- Stores credentials in localStorage
-- Color-coded deploy logs + deploy history viewer
-
-### 📦 Pulumi ZIP Generator
-- Automatically creates:
-  - `Pulumi.yaml`
-  - `index.ts` function handler
-  - `tsconfig.json`
-- Downloadable as ZIP — deployable via `pulumi up`
-
-### 🧪 Built-in API Testing
-- Set method (`GET` / `POST`)
-- Add body payload
-- View response logs and status codes inline
+- ⚡ **Live Monaco Editor** – VSCode-like, drag-and-drop, multi-file aware
+- 👁️ **Secure Preview Iframe** – Runs your fetch handler with real console output
+- ☁️ **One-Click Cloud Deploy** – Cloudflare (via Pulumi), AWS Lambda, and Vercel (WIP)
+- 🧪 **Built-in API Tester** – Send POST/GET to deployed endpoint, log responses
+- 📦 **Pulumi ZIP Export** – Download full project with `Pulumi.yaml`, `index.ts`, `tsconfig.json`
+- 📜 **Deploy History Viewer** – Last 5 deploys with timestamp, provider, and URL
+- ⚙️ **Cloud Config Modal** – Store tokens, script names, regions, etc.
 
 ---
 
 ## 🚀 Install
 
 ```bash
-# One-liner install via GitHub Release
-curl -L https://github.com/mansoor-mamnoon/edge-deployer/releases/download/v1.0.0/edge-deployer-mac.dmg -o edge-deployer.dmg
+# MacOS (universal)
+curl -L https://github.com/mansoor-mamnoon/edge-deployer/releases/latest/download/edge-deployer-mac.dmg -o edge-deployer.dmg
 ```
 
-> Builds for Windows and Linux coming soon. Planning Homebrew formula + .AppImage for cross-platform support.
+> Don't see your platform in [Releases](https://github.com/mansoor-mamnoon/edge-deployer/releases)?  
+> CLI support not planned — this tool is proudly **no-terminal™**.
 
 ---
 
 ## 📚 Documentation
 
-> Full documentation coming soon. For now, explore the app via the live demo above.
+> Full documentation is coming soon.
 
-Planned docs include:
-- Architecture diagrams
-- Deployment model explainers
-- Plugin authoring guide
+In the meantime:
+- Use the demo above to explore the UI
+- Check the codebase — it’s cleanly modular with deployers per provider
+- Devs welcome to contribute `/docs` content!
 
 ---
 
@@ -112,16 +103,16 @@ Planned docs include:
 Electron (Main)
 │
 ├── preload.ts                  ← Secure bridge to frontend via contextBridge
-├── multiCloudDeployer.ts       ← Handles Cloudflare/AWS/Vercel dispatch
-├── generatePulumiCloudflare.ts ← Creates ZIP with Pulumi IaC
+├── multiCloudDeployer.ts       ← Dispatch Cloudflare/AWS/Vercel handlers
+├── generatePulumiCloudflare.ts ← Pulumi YAML + TS bundler
 │
 └── Renderer (React + TS)
-    ├── MonacoEditor.tsx         ← VSCode-style drag & drop editor
-    ├── Preview.tsx              ← Sandboxed fetch-based live runner
-    ├── DeployLogPanel.tsx       ← Streams logs via IPC
-    ├── TestPanel.tsx            ← API tester with method + body
-    ├── DeployHistoryPanel.tsx   ← View last 5 deploys
-    └── ConfigModal.tsx          ← Credential + project config
+    ├── MonacoEditor.tsx         ← VSCode-style rich editor
+    ├── Preview.tsx              ← Sandbox iframe + feedback panel
+    ├── DeployLogPanel.tsx       ← IPC-connected log streamer
+    ├── TestPanel.tsx            ← Interactive API tester
+    ├── DeployHistoryPanel.tsx   ← Persistent deploy summary
+    └── ConfigModal.tsx          ← Env var and credential config
 ```
 
 ---
@@ -129,7 +120,7 @@ Electron (Main)
 ## 🧪 How It Works (Step-by-Step)
 
 ```bash
-# 1. Clone and run locally
+# 1. Run locally for dev
 git clone https://github.com/mansoor-mamnoon/edge-deployer
 cd edge-deployer
 npm install
@@ -138,12 +129,12 @@ npm run dev
 
 ```md
 2. Then inside the app:
-- 💡 Write or paste a JavaScript fetch handler
-- ▶️ Click “Run” to preview the live response
-- ☁️ Click “Deploy” to push to your chosen cloud
-- 🔗 Copy the deployment URL (Cloudflare or AWS)
-- 🧪 Use the built-in tester to send requests
-- 📥 Download the Pulumi ZIP for GitOps or manual deployment
+- 🧠 Paste or write a JavaScript edge handler
+- ▶️ Run to preview status (✅ 200 OK, ❌ error, etc.)
+- ☁️ Deploy to your selected cloud
+- 🔗 Grab the deployed URL
+- 🧪 Test it in-app with POST/GET + body
+- 📥 Export Pulumi bundle for GitOps or CLI use
 ```
 
 ---
@@ -151,7 +142,7 @@ npm run dev
 ## 📤 Output Example
 
 ```ts
-// Deployed Function
+// Deployed Worker
 addEventListener("fetch", event => {
   event.respondWith(handleRequest(event.request));
 });
@@ -164,38 +155,11 @@ async function handleRequest(request) {
 ```
 
 ```yaml
-# Pulumi.yaml (generated)
+# Pulumi.yaml
 name: edge-worker
 runtime: nodejs
-description: Cloudflare worker generated by Edge Deployer
+description: Generated with Edge Deployer
 ```
-
-```ts
-// index.ts (Pulumi entrypoint)
-import * as cloudflare from "@pulumi/cloudflare";
-
-export const worker = new cloudflare.WorkerScript("my-worker", {
-  name: "my-worker",
-  content: `...`,
-});
-```
-
----
-
-## 👤 Who Is This For?
-
-- 🧑‍💻 Devs tired of managing IAM roles and YAML
-- 🧪 API teams building internal tools
-- 🚀 Hackathon teams needing fast deploys
-- 🛠 Engineers prototyping serverless workflows
-
----
-
-## 🌍 Used In
-
-> Feature coming soon: public usage showcase.
-
-Want to be featured? Fork the project and tag [`#EdgeDeployer`](https://github.com/topics/edgedeployer).
 
 ---
 
@@ -206,53 +170,65 @@ Want to be featured? Fork the project and tag [`#EdgeDeployer`](https://github.c
 | Desktop Shell | Electron                               |
 | Editor        | React + TypeScript + Monaco Editor     |
 | Deploy Logic  | Pulumi, JSZip, file-saver              |
-| Infra-as-Code | Pulumi (TypeScript generator)          |
-| Cloud Targets | Cloudflare Workers (✅), AWS, Vercel (WIP) |
+| Infra-as-Code | Pulumi (TS-based cloud config)         |
+| Cloud Targets | Cloudflare (✅), AWS Lambda (WIP), Vercel (WIP) |
+
+---
+
+## 👤 Who Is This For?
+
+- 🧑‍💻 Devs tired of IAM roles and CLI errors
+- 🚀 Hackathon participants needing deploy speed
+- 🧪 Teams testing internal APIs without overhead
+- 🛠 Students learning cloud platforms the visual way
+
+---
+
+## 🌍 Used In
+
+> Currently under development. This section will include real usage once version 1.0.0 is released and adopted.
 
 ---
 
 ## 🔮 Roadmap
 
-- [ ] Vercel deploy via REST API
-- [ ] AWS Lambda ZIP + region picker
-- [ ] Terraform `.tf` export
-- [ ] Plugin-based provider system
-- [ ] UI improvements: tabbed editing, autosave, onboarding
-- [x] Configurable deploy target
-- [x] Downloadable Pulumi bundle
-- [x] API tester panel
-- [x] Deploy history with timestamp + URL
+- [ ] Vercel REST deployer
+- [ ] AWS Lambda with ZIP + region config
+- [ ] Terraform `.tf` generation
+- [ ] Drag-and-drop ZIP upload deploys
+- [ ] Inline error linter + Monaco warnings
+- [x] Pulumi ZIP bundler
+- [x] Deploy log + tester panels
+- [x] Configurable cloud selection
 
 ---
 
 ## 🤝 Contributing
 
-Want to extend to Azure, Netlify, or Railway?
+Want to:
+- Add support for Azure, Netlify, or Fly.io?
+- Improve onboarding flow or keyboard UX?
+- Ship a CLI wrapper despite our “no-terminal” stance?
 
-Feel free to:
-- Submit an issue
-- Fork and PR a new deployer
-- Improve UX with keyboard shortcuts or linting
-
-📬 Or message me directly via [LinkedIn](https://www.linkedin.com/in/mansoormamnoon)
+> PRs, issues, and discussions welcome.  
+> Start here 👉 [CONTRIBUTING.md](https://github.com/mansoor-mamnoon/edge-deployer/CONTRIBUTING.md)
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License.  
-Feel free to fork, build, remix, or contribute.
+MIT License — do what you want, just don't gate it behind YAML again 😄
 
-> Built to remove the friction between development and deployment.
+> Built to replace cloud anxiety with deployment joy.
 
 ---
 
 ## 👨‍💻 About the Author
 
 **Mansoor Mamnoon**  
-Creator of **Edge Deployer**, NeuroQuant Agent, and BlackUnicrn tooling.  
 UC Berkeley • Software Engineer • Systems & Infra Enthusiast  
 
-> Passionate about building fast developer tools, systems UX, and low-ceremony infrastructure.
+> Creator of Edge Deployer, NeuroQuant Agent, and BlackUnicrn tooling.  
+> Passionate about building fast developer tools, reducing friction, and enabling shipping over suffering.
 
 🔗 [LinkedIn](https://www.linkedin.com/in/mansoormamnoon) • 🌐 [Portfolio](https://mansoor-mamnoon.github.io/personal-website)
