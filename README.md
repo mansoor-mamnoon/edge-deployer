@@ -211,7 +211,7 @@ Want to:
 - Ship a CLI wrapper despite our “no-terminal” stance?
 
 > PRs, issues, and discussions welcome.  
-> Start here 👉 [CONTRIBUTING.md](https://github.com/mansoor-mamnoon/edge-deployer/CONTRIBUTING.md)
+> Start here 👉 [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ---
 
