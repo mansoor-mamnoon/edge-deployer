@@ -1,0 +1,8 @@
+{
+  "name": "openai-middleware",
+  "version": "1.0.0",
+  "description": "Injects an OpenAI-compatible proxy header and validates that OPENAI_API_KEY is present before deploying.",
+  "entrypoint": "index.js",
+  "permissions": ["code:read", "code:transform", "logs:write"],
+  "minAppVersion": "2.0.0"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "request-logger",
+  "version": "1.0.0",
+  "description": "Wraps every fetch handler with structured request logging (method, URL, status, latency) to the edge logs.",
+  "entrypoint": "index.js",
+  "permissions": ["code:transform", "logs:write"],
+  "minAppVersion": "2.0.0"
+}

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "types": ["node", "electron"],
+    "target": "ES2020",
+    "module": "CommonJS",
+    "jsx": "react",
+    "outDir": "./build",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "rootDir": ".",
+    "resolveJsonModule": true
+  },
+  "include": ["src", "electron", "components", "src/index.tsx"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "**/__tests__/**",
+    "**/__mocks__/**",
+    "src/__tests__",
+    "electron/__tests__"
+  ]
+}

@@ -1,0 +1,104 @@
+appId: com.mansoor.edge-deployer
+productName: Edge Deployer
+copyright: "Copyright © 2025 Mansoor Mamnoon"
+
+directories:
+  output: dist
+  buildResources: assets
+
+files:
+  - build/**/*
+  - node_modules/**/*
+  - package.json
+
+# Exclude large dev-only dirs from the packaged app
+fileAssociations:
+  - ext: json
+    name: Edge Project
+    description: Edge Deployer workspace file
+    role: Editor
+
+mac:
+  category: public.app-category.developer-tools
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+    - target: zip
+      arch: [x64, arm64]
+  icon: assets/icon.icns
+  darkModeSupport: true
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: assets/entitlements.mac.plist
+  entitlementsInherit: assets/entitlements.mac.plist
+
+dmg:
+  title: "Edge Deployer ${version}"
+  background: assets/dmg-background.png
+  icon: assets/icon.icns
+  iconSize: 80
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  icon: assets/icon.ico
+  publisherName: "Mansoor Mamnoon"
+  verifyUpdateCodeSignature: false
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+  installerIcon: assets/icon.ico
+  uninstallerIcon: assets/icon.ico
+  installerHeaderIcon: assets/icon.ico
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Edge Deployer
+  license: LICENSE
+
+linux:
+  target:
+    - target: AppImage
+      arch: [x64]
+    - target: deb
+      arch: [x64]
+  category: Development
+  icon: assets/icon.png
+  desktop:
+    Name: Edge Deployer
+    Comment: Serverless edge function IDE
+    Categories: Development;IDE;
+
+deb:
+  priority: optional
+  depends:
+    - libgtk-3-0
+    - libnotify4
+    - libnss3
+    - libxss1
+    - libxtst6
+    - xdg-utils
+    - libatspi2.0-0
+    - libuuid1
+
+publish:
+  provider: github
+  owner: mansoormmamnoon
+  repo: edge-deployer
+  releaseType: release
+
+# Auto-update: check for updates every 24 hours
+autoUpdate:
+  enabled: true

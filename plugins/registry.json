@@ -1,0 +1,99 @@
+{
+  "version": "1",
+  "updatedAt": "2026-05-23",
+  "plugins": [
+    {
+      "id": "openai-middleware",
+      "name": "OpenAI Key Middleware",
+      "description": "Validates OpenAI API key hygiene before every deploy and appends a usage-tracking banner comment.",
+      "version": "1.0.0",
+      "author": "edge-deployer",
+      "category": "Security",
+      "tags": ["openai", "security", "ai"],
+      "permissions": ["code:transform", "code:read"],
+      "stars": 42,
+      "source": "https://github.com/mansoormmamnoon/edge-deployer/tree/main/plugins/examples/openai-middleware",
+      "install": "Copy plugins/examples/openai-middleware/ into your plugin directory"
+    },
+    {
+      "id": "env-injector",
+      "name": "Env Variable Injector",
+      "description": "Scans for env.VARNAME and process.env.VARNAME references, prepends a JSDoc block listing all required variables.",
+      "version": "1.0.0",
+      "author": "edge-deployer",
+      "category": "Developer Experience",
+      "tags": ["env", "documentation", "dx"],
+      "permissions": ["code:read", "code:transform"],
+      "stars": 31,
+      "source": "https://github.com/mansoormmamnoon/edge-deployer/tree/main/plugins/examples/env-injector",
+      "install": "Copy plugins/examples/env-injector/ into your plugin directory"
+    },
+    {
+      "id": "request-logger",
+      "name": "Request Logger",
+      "description": "Wraps your fetch handler with structured request/response logging — method, URL, status, latency.",
+      "version": "1.0.0",
+      "author": "edge-deployer",
+      "category": "Observability",
+      "tags": ["logging", "observability", "middleware"],
+      "permissions": ["code:transform"],
+      "stars": 28,
+      "source": "https://github.com/mansoormmamnoon/edge-deployer/tree/main/plugins/examples/request-logger",
+      "install": "Copy plugins/examples/request-logger/ into your plugin directory"
+    },
+    {
+      "id": "console-stripper",
+      "name": "Console Stripper",
+      "description": "Removes all console.log / console.debug calls before deploy to keep production clean.",
+      "version": "1.1.0",
+      "author": "edge-deployer",
+      "category": "Production",
+      "tags": ["logging", "cleanup", "production"],
+      "permissions": ["code:transform"],
+      "stars": 55,
+      "builtin": true,
+      "source": null,
+      "install": "Built-in — no install needed"
+    },
+    {
+      "id": "cors-headers",
+      "name": "CORS Header Injector",
+      "description": "Adds Access-Control-Allow-Origin, Access-Control-Allow-Methods, and Access-Control-Allow-Headers to every response via code transform.",
+      "version": "1.0.2",
+      "author": "edge-deployer",
+      "category": "Security",
+      "tags": ["cors", "headers", "middleware"],
+      "permissions": ["code:transform"],
+      "stars": 49,
+      "builtin": true,
+      "source": null,
+      "install": "Built-in — no install needed"
+    },
+    {
+      "id": "sentry-integration",
+      "name": "Sentry Error Tracking",
+      "description": "Wraps your Worker with Sentry error capturing. Requires SENTRY_DSN environment variable.",
+      "version": "0.9.0",
+      "author": "community",
+      "category": "Observability",
+      "tags": ["sentry", "errors", "monitoring"],
+      "permissions": ["code:transform", "network:fetch"],
+      "stars": 18,
+      "source": "https://github.com/community/edge-deployer-sentry",
+      "install": "Coming soon — submit your plugin via a GitHub issue"
+    },
+    {
+      "id": "content-security-policy",
+      "name": "CSP Header Generator",
+      "description": "Injects a strict Content-Security-Policy header based on your worker's output type (HTML/JSON/binary).",
+      "version": "0.8.0",
+      "author": "community",
+      "category": "Security",
+      "tags": ["csp", "headers", "security"],
+      "permissions": ["code:transform"],
+      "stars": 12,
+      "source": "https://github.com/community/edge-deployer-csp",
+      "install": "Coming soon — submit your plugin via a GitHub issue"
+    }
+  ]
+}

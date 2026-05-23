@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline';">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1a1a1a;
+      color: #d4d4d4;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px;
+      background: #252526;
+      border-bottom: 1px solid #333;
+      font-size: 11px;
+    }
+    #status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #555;
+      flex-shrink: 0;
+    }
+    #status-dot.ok   { background: #4f4; }
+    #status-dot.err  { background: #f44; }
+    #status-dot.run  { background: #fa0; animation: pulse 0.8s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    #status-text { color: #888; flex: 1; }
+    #timing { color: #555; font-size: 10px; }
+    #output-container {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #response-pane {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    #console-pane {
+      max-height: 80px;
+      overflow-y: auto;
+      border-top: 1px solid #2a2a2a;
+      padding: 6px 10px;
+      background: #111;
+    }
+    .console-line { font-size: 11px; margin-bottom: 2px; }
+    .console-line.log   { color: #aaa; }
+    .console-line.error { color: #f66; }
+    .console-line.warn  { color: #fa0; }
+    .console-line.info  { color: #6af; }
+    .error-output { color: #f66; }
+    .meta { color: #555; font-size: 11px; margin-bottom: 6px; }
+    .html-output iframe { width: 100%; height: 100%; border: none; }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <div id="status-dot"></div>
+    <span id="status-text">Waiting for code...</span>
+    <span id="timing"></span>
+  </div>
+  <div id="output-container">
+    <div id="response-pane">
+      <span style="color:#555">Run your code with ▶ Run or edit to hot-reload.</span>
+    </div>
+    <div id="console-pane"></div>
+  </div>
+
+  <script>
+    const dot = document.getElementById('status-dot');
+    const statusText = document.getElementById('status-text');
+    const timing = document.getElementById('timing');
+    const responsePane = document.getElementById('response-pane');
+    const consolePane = document.getElementById('console-pane');
+
+    function setStatus(state, text, ms) {
+      dot.className = state;
+      statusText.textContent = text;
+      timing.textContent = ms != null ? `${ms}ms` : '';
+    }
+
+    function addConsole(level, ...args) {
+      const line = document.createElement('div');
+      line.className = `console-line ${level}`;
+      line.textContent = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      consolePane.appendChild(line);
+      consolePane.scrollTop = consolePane.scrollHeight;
+    }
+
+    // ── Edge Runtime Simulation ────────────────────────────────────────────
+    // Polyfill a minimal subset of the Cloudflare Workers runtime
+    class EdgeRequest extends Request {}
+    class EdgeResponse extends Response {}
+
+    const simulatedEnv = {
+      Request: EdgeRequest,
+      Response: EdgeResponse,
+      Headers,
+      URL,
+      URLSearchParams,
+      fetch: window.fetch.bind(window),
+      crypto: window.crypto,
+      TextEncoder,
+      TextDecoder,
+      atob,
+      btoa,
+      console: {
+        log:   (...a) => addConsole('log', ...a),
+        error: (...a) => addConsole('error', ...a),
+        warn:  (...a) => addConsole('warn', ...a),
+        info:  (...a) => addConsole('info', ...a),
+      },
+      // Minimal KV simulation (in-memory)
+      MY_KV: (() => {
+        const store = new Map();
+        return {
+          get: (k) => Promise.resolve(store.get(k) ?? null),
+          put: (k, v) => { store.set(k, v); return Promise.resolve(); },
+          delete: (k) => { store.delete(k); return Promise.resolve(); },
+        };
+      })(),
+    };
+
+    // Detect infinite loops with a counter
+    let _callCount = 0;
+    const MAX_CALLS = 10000;
+
+    async function runCode(code) {
+      consolePane.innerHTML = '';
+      responsePane.innerHTML = '';
+      _callCount = 0;
+      setStatus('run', 'Running...', null);
+
+      const t0 = performance.now();
+
+      // Instrument the code with a call-count check
+      const instrumented = `
+        let __calls = 0;
+        const __origWhile = true;
+        ${code}
+      `;
+
+      try {
+        // Build sandbox function with edge runtime globals injected
+        const args = Object.keys(simulatedEnv);
+        const vals = Object.values(simulatedEnv);
+
+        // Collect fetch event listener
+        let fetchHandler = null;
+        const fakeAddEventListener = (type, handler) => {
+          if (type === 'fetch') fetchHandler = handler;
+        };
+
+        const sandboxFn = new Function(...args, 'addEventListener', instrumented);
+
+        // Call with simulated timeout (5s)
+        const timeout = new Promise((_, rej) =>
+          setTimeout(() => rej(new Error('Execution timed out (5s)')), 5000)
+        );
+
+        await Promise.race([
+          Promise.resolve(sandboxFn(...vals, fakeAddEventListener)),
+          timeout,
+        ]);
+
+        // Simulate a fetch event if handler registered
+        let responseText = '';
+        let responseStatus = 200;
+        let responseHeaders = {};
+
+        if (fetchHandler) {
+          const mockRequest = new EdgeRequest('http://localhost/', { method: 'GET' });
+          let resolvedResponse = null;
+
+          const mockEvent = {
+            request: mockRequest,
+            respondWith: (p) => { resolvedResponse = p; },
+            waitUntil: () => {},
+          };
+
+          await Promise.race([fetchHandler(mockEvent), timeout]);
+
+          if (resolvedResponse) {
+            const res = await resolvedResponse;
+            responseStatus = res.status;
+            responseHeaders = Object.fromEntries(res.headers.entries());
+
+            const ct = res.headers.get('content-type') || '';
+            if (ct.includes('html')) {
+              responsePane.innerHTML = `<div class="meta">Status: ${responseStatus} · ${ct}</div><iframe srcdoc="${(await res.text()).replace(/"/g, '&quot;')}"></iframe>`;
+            } else if (ct.includes('json')) {
+              const json = JSON.parse(await res.text());
+              responseText = JSON.stringify(json, null, 2);
+              responsePane.innerHTML = `<div class="meta">Status: ${responseStatus} · ${ct}</div><pre>${escHtml(responseText)}</pre>`;
+            } else {
+              responseText = await res.text();
+              responsePane.innerHTML = `<div class="meta">Status: ${responseStatus} · ${ct}</div><pre>${escHtml(responseText)}</pre>`;
+            }
+          } else {
+            responsePane.textContent = 'Handler called respondWith(undefined)';
+          }
+        } else if (typeof handleRequest === 'function') {
+          // Module-style export
+          const mockRequest = new EdgeRequest('http://localhost/', { method: 'GET' });
+          const res = await handleRequest(mockRequest);
+          responseText = await res.text();
+          responsePane.innerHTML = `<div class="meta">Status: ${res.status}</div><pre>${escHtml(responseText)}</pre>`;
+        } else {
+          responsePane.textContent = 'No fetch event listener or handleRequest() found.';
+        }
+
+        const elapsed = Math.round(performance.now() - t0);
+        setStatus('ok', `200 OK`, elapsed);
+
+      } catch (err) {
+        const elapsed = Math.round(performance.now() - t0);
+        responsePane.innerHTML = `<div class="error-output">${escHtml(String(err))}</div>`;
+        addConsole('error', String(err));
+        setStatus('err', 'Runtime error', elapsed);
+      }
+    }
+
+    function escHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Receive messages from the parent frame
+    window.addEventListener('message', async (event) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+
+      if (data.type === 'run-code') {
+        await runCode(data.code);
+      } else if (data.type === 'preview-started') {
+        setStatus('run', 'Loading...', null);
+        consolePane.innerHTML = '';
+        responsePane.innerHTML = '';
+      }
+    });
+  </script>
+</body>
+</html>

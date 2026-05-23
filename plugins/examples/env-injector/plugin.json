@@ -1,0 +1,8 @@
+{
+  "name": "env-injector",
+  "version": "1.0.0",
+  "description": "Injects a comment block at the top of the worker listing all environment variable names referenced in the code (does not inject values).",
+  "entrypoint": "index.js",
+  "permissions": ["code:read", "code:transform"],
+  "minAppVersion": "2.0.0"
+}

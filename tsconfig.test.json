@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "strict": false
+  },
+  "include": [
+    "src",
+    "electron",
+    "src/__tests__",
+    "electron/__tests__",
+    "src/__mocks__"
+  ]
+}
