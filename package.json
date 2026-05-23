@@ -37,9 +37,8 @@
     "edge-computing"
   ],
   "dependencies": {
-    "@aws-sdk/client-lambda": "^3.833.0",
-    "@aws-sdk/client-sts": "^3.830.0",
-    "axios": "^1.10.0",
+    "@aws-sdk/client-lambda": "^3.1053.0",
+    "@aws-sdk/client-sts": "^3.1053.0",
     "dotenv": "^16.5.0",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",

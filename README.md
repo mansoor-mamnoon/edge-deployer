@@ -324,6 +324,8 @@ npm install
 npm start        # dev mode: TypeScript watch + Webpack + Electron
 ```
 
+> **`npm audit` note:** `npm audit --omit=dev` reports 0 vulnerabilities. The ~40 findings in a full audit are inside `electron-builder` and `webpack-dev-server` — build tools that never run in the packaged app or affect end users.
+
 ### Build
 
 ```bash
