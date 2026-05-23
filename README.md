@@ -9,7 +9,6 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tests](https://img.shields.io/badge/tests-85%20passing-brightgreen)](#testing)
 [![License: ISC](https://img.shields.io/badge/License-ISC-green.svg)](./LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/mansoormmamnoon/edge-deployer/ci.yml?label=CI)](https://github.com/mansoormmamnoon/edge-deployer/actions)
 
 A unified desktop IDE for serverless edge functions — write in Monaco, preview in an edge runtime, deploy to Cloudflare / AWS / Vercel / Netlify, then load-test, observe, scan for security issues, and export infrastructure-as-code. No tab switching. No terminal juggling. One window.
 
