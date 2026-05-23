@@ -566,6 +566,6 @@ Full architecture reference: [docs/architecture.md](docs/architecture.md)
 
 <div align="center">
 
-Built by [Mansoor Mamnoon](https://github.com/mansoormmamnoon) · ISC License · [Report an issue](https://github.com/mansoormmamnoon/edge-deployer/issues)
+Built by [Mansoor Mamnoon](https://github.com/mansoor-mamnoon) · ISC License · [Report an issue](https://github.com/mansoor-mamnoon/edge-deployer/issues)
 
 </div>
